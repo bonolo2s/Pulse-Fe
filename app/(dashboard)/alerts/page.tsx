@@ -5,7 +5,7 @@ import { Bell, AlertTriangle, AlertOctagon, CheckCircle2, Zap, Check } from "luc
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { alerts as initialAlerts, type Alert } from "@/lib/data"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/shared/utils"
 
 const alertTypeConfig: Record<
   Alert["type"],

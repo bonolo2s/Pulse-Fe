@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Activity, LayoutDashboard, Bell, Settings, CheckCircle2 } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/shared/utils"
 
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
