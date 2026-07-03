@@ -1,8 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Activity, LayoutDashboard, Bell, Settings, CheckCircle2 } from "lucide-react"
+import { usePathname, useRouter } from "next/navigation"
+import { Activity, LayoutDashboard, Bell, Settings, CheckCircle2, LogOut } from "lucide-react"
 import { cn } from "@/lib/shared/utils"
 
 const navItems = [
@@ -13,6 +13,12 @@ const navItems = [
 
 export function AppSidebar() {
   const pathname = usePathname()
+  const router = useRouter()
+
+  function handleLogout() {
+    localStorage.removeItem("token")
+    router.push("/login")
+  }
 
   return (
     <aside className="flex h-screen w-60 flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border">
@@ -53,7 +59,14 @@ export function AppSidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-sidebar-border px-4 py-4">
+      <div className="border-t border-sidebar-border px-4 py-4 flex flex-col gap-3">
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground transition-colors w-full"
+        >
+          <LogOut className="size-[18px]" />
+          Logout
+        </button>
         <div className="flex items-center gap-2 text-xs text-sidebar-foreground">
           <CheckCircle2 className="size-3.5 text-status-operational" />
           <span>All Systems Operational</span>
