@@ -7,6 +7,7 @@ import { Activity, CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { register } from "@/lib"
 
 const perks = [
   "5 endpoints monitored free",
@@ -16,18 +17,30 @@ const perks = [
 
 export default function RegisterPage() {
   const router = useRouter()
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [name, setName] = useState("")//
+  const [email, setEmail] = useState("")//
+  const [password, setPassword] = useState("")//
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
+    console.log("Form submitted with:", { name, email, password })
     e.preventDefault()
     setLoading(true)
-    // Simulate registration
-    setTimeout(() => {
-      router.push("/dashboard")
-    }, 800)
+    setError(null)
+
+    try {
+      const response = await register({ fullName: name, email, password })
+      if (response.error) {
+        setError(response.message)
+        return
+      }
+      router.push("/login")
+    } catch (err) {
+      setError("Something went wrong. Please try again.")
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -119,6 +132,8 @@ export default function RegisterPage() {
                   autoComplete="new-password"
                 />
               </div>
+
+              {error && <p className="text-sm text-red-500">{error}</p>}
 
               <Button type="submit" className="mt-1 w-full" disabled={loading}>
                 {loading ? "Creating account..." : "Create Account"}
