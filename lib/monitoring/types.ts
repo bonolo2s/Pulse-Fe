@@ -8,4 +8,7 @@ export type Endpoint = {
   timeoutMs: number
   isActive: boolean
   createdAt: string
+  status: string | null
+  latencyMs: number | null
+  lastCheckedAt: string | null
 }
