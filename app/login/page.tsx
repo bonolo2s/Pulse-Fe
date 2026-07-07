@@ -28,6 +28,8 @@ export default function LoginPage() {
         return
       }
       localStorage.setItem("token", response.result.token)
+      localStorage.setItem("refreshToken", response.result.refreshToken)
+      localStorage.setItem("userId", response.result.user.id)
       router.push("/dashboard")
     } catch (err) {
       setError("Something went wrong. Please try again.")//
