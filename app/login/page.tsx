@@ -30,7 +30,7 @@ export default function LoginPage() {
       localStorage.setItem("token", response.result.token)
       router.push("/dashboard")
     } catch (err) {
-      setError("Something went wrong. Please try again.")
+      setError("Something went wrong. Please try again.")//
     } finally {
       setLoading(false)
     }
