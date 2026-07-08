@@ -11,4 +11,5 @@ export type Endpoint = {
   status: string | null
   latencyMs: number | null
   lastCheckedAt: string | null
+  uptimePercentage: number | null
 }
