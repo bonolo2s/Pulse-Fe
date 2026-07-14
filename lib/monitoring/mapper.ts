@@ -22,7 +22,7 @@ function toStatus(status: string | null): EndpointStatus {
   return (status?.toLowerCase() as EndpointStatus) ?? "downtime"
 }
 
-function intervalToSeconds(interval: string): number {
+export function intervalToSeconds(interval: string): number {
   const unit = interval.slice(-1)
   const value = parseInt(interval.slice(0, -1), 10)
 

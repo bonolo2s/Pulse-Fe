@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import type { Endpoint } from "@/lib/data"
+import { intervalToSeconds, mapToUiEndpoint, addEndpoint } from "@/lib"
 
 interface AddEndpointDialogProps {
   open: boolean
@@ -34,22 +35,25 @@ export function AddEndpointDialog({ open, onClose, onAdd }: AddEndpointDialogPro
   const [method, setMethod] = useState("HTTPS")
   const [timeoutMs, setTimeoutMs] = useState("5000")
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!name.trim() || !url.trim()) return
 
-    const newEndpoint: Endpoint = {
-      id: crypto.randomUUID(),
+    const userId = localStorage.getItem("userId")
+    if (!userId) return
+
+    const response = await addEndpoint({
+      userId,
       name: name.trim(),
       url: url.trim(),
-      status: "operational",
-      uptime: 100,
-      checkInterval: interval,
-      lastChecked: "Just now",
-      responseTime: 0,
-    }
+      method,
+      intervalSeconds: intervalToSeconds(interval),
+      timeoutMs: Number(timeoutMs) || 5000,
+    })
 
-    onAdd(newEndpoint)
+    if (response.error) return
+
+    onAdd(mapToUiEndpoint(response.result))
     setName("")
     setUrl("")
     setInterval("5m")
