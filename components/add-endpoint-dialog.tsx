@@ -31,6 +31,8 @@ export function AddEndpointDialog({ open, onClose, onAdd }: AddEndpointDialogPro
   const [name, setName] = useState("")
   const [url, setUrl] = useState("")
   const [interval, setInterval] = useState("5m")
+  const [method, setMethod] = useState("HTTPS")
+  const [timeoutMs, setTimeoutMs] = useState("5000")
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -51,6 +53,8 @@ export function AddEndpointDialog({ open, onClose, onAdd }: AddEndpointDialogPro
     setName("")
     setUrl("")
     setInterval("5m")
+    setMethod("HTTPS")
+    setTimeoutMs("5000")
     onClose()
   }
 
@@ -83,6 +87,30 @@ export function AddEndpointDialog({ open, onClose, onAdd }: AddEndpointDialogPro
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               required
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="ep-method">Method</Label>
+            <Select value={method} onValueChange={setMethod}>
+              <SelectTrigger className="w-full" id="ep-method">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="HTTP">HTTP</SelectItem>
+                <SelectItem value="HTTPS">HTTPS</SelectItem>
+                <SelectItem value="TCP">TCP</SelectItem>
+                <SelectItem value="DNS">DNS</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="ep-timeout">Timeout (ms)</Label>
+            <Input
+              id="ep-timeout"
+              type="number"
+              placeholder="5000"
+              value={timeoutMs}
+              onChange={(e) => setTimeoutMs(e.target.value)}
             />
           </div>
           <div className="flex flex-col gap-2">
