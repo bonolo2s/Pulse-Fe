@@ -22,6 +22,18 @@ function toStatus(status: string | null): EndpointStatus {
   return (status?.toLowerCase() as EndpointStatus) ?? "downtime"
 }
 
+function intervalToSeconds(interval: string): number {
+  const unit = interval.slice(-1)
+  const value = parseInt(interval.slice(0, -1), 10)
+
+  switch (unit) {
+    case "s": return value
+    case "m": return value * 60
+    case "h": return value * 3600
+    default: return value
+  }
+}
+
 export function mapToUiEndpoint(api: ApiEndpoint): UiEndpoint {
   return {
     id: api.id,
