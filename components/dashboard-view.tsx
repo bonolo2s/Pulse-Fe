@@ -1,16 +1,34 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { StatCards } from "@/components/stat-cards"
 import { EndpointList } from "@/components/endpoint-list"
 import { AddEndpointDialog } from "@/components/add-endpoint-dialog"
-import { endpoints as initialEndpoints, getStatusCounts, type Endpoint } from "@/lib/data"
+import { getStatusCounts } from "@/lib/data"
+import type { Endpoint } from "@/lib/data"
+import { getEndpoints, mapToUiEndpoint } from "@/lib"
 
 export function DashboardView() {
-  const [endpoints, setEndpoints] = useState<Endpoint[]>(initialEndpoints)
+  const [endpoints, setEndpoints] = useState<Endpoint[]>([])
+  const [loading, setLoading] = useState(true)
   const [addOpen, setAddOpen] = useState(false)
+
+  useEffect(() => {
+    async function fetchEndpoints() {
+      const userId = localStorage.getItem("userId")
+      if (!userId) return
+
+      const response = await getEndpoints(userId)
+      if (!response.error) {
+        setEndpoints(response.result.map(mapToUiEndpoint))
+      }
+      setLoading(false)
+    }
+
+    fetchEndpoints()
+  }, [])
 
   const counts = getStatusCounts(endpoints)
 

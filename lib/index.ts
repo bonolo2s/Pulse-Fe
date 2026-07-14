@@ -4,3 +4,4 @@ export * from "./shared/types";
 
 export * from "./monitoring/types"
 export * from "./monitoring/api"
+export * from "./monitoring/mapper"
