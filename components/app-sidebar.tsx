@@ -15,10 +15,12 @@ export function AppSidebar() {
   const pathname = usePathname()
   const router = useRouter()
 
-  function handleLogout() {
-    localStorage.removeItem("token")
-    router.push("/login")
-  }
+function handleLogout() {
+  localStorage.removeItem("token")
+  localStorage.removeItem("refreshToken")
+  localStorage.removeItem("userId")
+  router.push("/login")
+}
 
   return (
     <aside className="flex h-screen w-60 flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border">
