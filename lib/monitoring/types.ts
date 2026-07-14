@@ -13,3 +13,12 @@ export type Endpoint = {
   lastCheckedAt: string | null
   uptimePercentage: number | null
 }
+
+export type AddEndpointRequest = {
+  userId: string
+  name: string
+  url: string
+  method: string
+  intervalSeconds: number
+  timeoutMs: number
+}
