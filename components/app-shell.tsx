@@ -17,7 +17,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     }
   }, [router])
 
-  if (!checked) return null // or a loading spinner
+  if (!checked) {
+      return (
+        <div className="flex h-screen items-center justify-center bg-background">
+          <div className="size-6 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-foreground" />
+        </div>
+      )
+    }
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
