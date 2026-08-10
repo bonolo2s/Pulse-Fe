@@ -16,3 +16,8 @@ export const toggleEndpoint = async (id: string): Promise<ApiResponse<null>> => 
   const response = await apiClient.patch<ApiResponse<null>>(`/monitoring/toggle-monitor/${id}`)
   return response.data
 }
+
+export const deleteEndpoint = async (id: string): Promise<ApiResponse<null>> => {
+  const response = await apiClient.delete<ApiResponse<null>>(`/monitoring/remove-endpoint/${id}`)
+  return response.data
+}
