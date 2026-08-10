@@ -9,6 +9,7 @@ export interface Endpoint {
   checkInterval: string
   lastChecked: string
   responseTime: number
+  isActive: boolean
 }
 
 export interface Alert {
@@ -31,6 +32,7 @@ export const endpoints: Endpoint[] = [
     checkInterval: "10m",
     lastChecked: "8 minutes ago",
     responseTime: 0,
+    isActive: true,
   },
   {
     id: "2",
@@ -41,6 +43,7 @@ export const endpoints: Endpoint[] = [
     uptime: 98.45,
     lastChecked: "1 minute ago",
     responseTime: 1240,
+    isActive: true,
   },
   {
     id: "3",
@@ -51,6 +54,7 @@ export const endpoints: Endpoint[] = [
     checkInterval: "1m",
     lastChecked: "1 minute ago",
     responseTime: 142,
+    isActive: true,
   },
   {
     id: "4",
@@ -61,6 +65,7 @@ export const endpoints: Endpoint[] = [
     checkInterval: "5m",
     lastChecked: "3 minutes ago",
     responseTime: 320,
+    isActive: true,
   },
   {
     id: "5",
@@ -71,9 +76,9 @@ export const endpoints: Endpoint[] = [
     checkInterval: "15m",
     lastChecked: "12 minutes ago",
     responseTime: 890,
+    isActive: false,
   },
 ]
-
 export const alerts: Alert[] = [
   {
     id: "a1",
