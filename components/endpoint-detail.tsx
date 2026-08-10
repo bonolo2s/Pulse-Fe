@@ -13,6 +13,7 @@ import { Switch } from "@/components/ui/switch"
 import { StatusBadge } from "@/components/status-badge"
 import type { Endpoint } from "@/lib/data"
 import { Clock, Globe, Zap, Timer, Trash2, Pencil } from "lucide-react"
+import { toggleEndpoint } from "@/lib"
 
 interface EndpointDetailProps {
   endpoint: Endpoint | null
@@ -32,8 +33,7 @@ function generateBars() {
 }
 
 export function EndpointDetail({ endpoint, open, onClose }: EndpointDetailProps) {
-  // TODO: replace local state with real IsActive from BE + toggle/delete API calls
-  const [isActive, setIsActive] = useState(true)
+  const [isActive, setIsActive] = useState(endpoint?.isActive ?? true)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
 
   if (!endpoint) return null
@@ -57,7 +57,17 @@ export function EndpointDetail({ endpoint, open, onClose }: EndpointDetailProps)
                 <span className="text-xs text-muted-foreground">
                   {isActive ? "Active" : "Paused"}
                 </span>
-                <Switch checked={isActive} onCheckedChange={setIsActive} />
+                <Switch
+                  checked={isActive}
+                  onCheckedChange={async (checked) => {
+                    const response = await toggleEndpoint(endpoint.id)
+                    if (!response.error) {
+                      setIsActive(checked)
+                    } else {
+                      console.error(response.message)
+                    }
+                  }}
+                />
               </div>
             </div>
           </div>
