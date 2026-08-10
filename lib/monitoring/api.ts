@@ -11,3 +11,8 @@ export const addEndpoint = async (payload: AddEndpointRequest): Promise<ApiRespo
   const response = await apiClient.post<ApiResponse<Endpoint>>(`/monitoring/add-endpoint`, payload)
   return response.data
 }
+
+export const toggleEndpoint = async (id: string): Promise<ApiResponse<null>> => {
+  const response = await apiClient.patch<ApiResponse<null>>(`/monitoring/toggle-monitor/${id}`)
+  return response.data
+}
