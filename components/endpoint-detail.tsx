@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import {
   Dialog,
   DialogContent,
@@ -7,9 +8,11 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Switch } from "@/components/ui/switch"
 import { StatusBadge } from "@/components/status-badge"
 import type { Endpoint } from "@/lib/data"
-import { Clock, Globe, Zap, Timer } from "lucide-react"
+import { Clock, Globe, Zap, Timer, Trash2, Pencil } from "lucide-react"
 
 interface EndpointDetailProps {
   endpoint: Endpoint | null
@@ -29,6 +32,10 @@ function generateBars() {
 }
 
 export function EndpointDetail({ endpoint, open, onClose }: EndpointDetailProps) {
+  // TODO: replace local state with real IsActive from BE + toggle/delete API calls
+  const [isActive, setIsActive] = useState(true)
+  const [confirmingDelete, setConfirmingDelete] = useState(false)
+
   if (!endpoint) return null
 
   const bars = generateBars()
@@ -36,10 +43,23 @@ export function EndpointDetail({ endpoint, open, onClose }: EndpointDetailProps)
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
-          <div className="flex items-center gap-3">
-            <StatusBadge status={endpoint.status} />
-            <DialogTitle className="text-base">{endpoint.name}</DialogTitle>
+        <DialogHeader className="pt-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <StatusBadge status={endpoint.status} />
+              <DialogTitle className="text-base">{endpoint.name}</DialogTitle>
+            </div>
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="icon" className="size-8">
+                <Pencil className="size-4" />
+              </Button>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground">
+                  {isActive ? "Active" : "Paused"}
+                </span>
+                <Switch checked={isActive} onCheckedChange={setIsActive} />
+              </div>
+            </div>
           </div>
           <DialogDescription className="font-mono text-xs">
             {endpoint.url}
@@ -101,6 +121,34 @@ export function EndpointDetail({ endpoint, open, onClose }: EndpointDetailProps)
             <span>30 days ago</span>
             <span>Today</span>
           </div>
+        </div>
+
+        {/* Danger zone */}
+        <div className="flex items-center justify-between rounded-lg border border-destructive/30 bg-destructive/5 p-3">
+          <div className="flex flex-col">
+            <span className="text-xs font-medium text-foreground">Delete this endpoint</span>
+            <span className="text-[11px] text-muted-foreground">This action cannot be undone.</span>
+          </div>
+          {confirmingDelete ? (
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={() => setConfirmingDelete(false)}>
+                Cancel
+              </Button>
+              <Button variant="destructive" size="sm" onClick={() => setConfirmingDelete(false)}>
+                Confirm
+              </Button>
+            </div>
+          ) : (
+            <Button
+              variant="destructive"
+              size="sm"
+              className="gap-1.5"
+              onClick={() => setConfirmingDelete(true)}
+            >
+              <Trash2 className="size-3.5" />
+              Delete
+            </Button>
+          )}
         </div>
       </DialogContent>
     </Dialog>
