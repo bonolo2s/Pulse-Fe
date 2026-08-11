@@ -13,12 +13,13 @@ import { Switch } from "@/components/ui/switch"
 import { StatusBadge } from "@/components/status-badge"
 import type { Endpoint } from "@/lib/data"
 import { Clock, Globe, Zap, Timer, Trash2, Pencil } from "lucide-react"
-import { toggleEndpoint } from "@/lib"
+import { deleteEndpoint, toggleEndpoint } from "@/lib"
 
 interface EndpointDetailProps {
   endpoint: Endpoint | null
   open: boolean
   onClose: () => void
+  onDelete: (id: string) => void
 }
 
 // Generate synthetic uptime history bars
@@ -32,7 +33,7 @@ function generateBars() {
   })
 }
 
-export function EndpointDetail({ endpoint, open, onClose }: EndpointDetailProps) {
+export function EndpointDetail({ endpoint, open, onClose, onDelete }: EndpointDetailProps) {
   const [isActive, setIsActive] = useState(endpoint?.isActive ?? true)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
 
@@ -44,6 +45,16 @@ export function EndpointDetail({ endpoint, open, onClose }: EndpointDetailProps)
   if (!endpoint) return null
 
   const bars = generateBars()
+
+  async function handleDelete() {
+    const response = await deleteEndpoint(endpoint!.id)
+    if (!response.error) {
+      onDelete(endpoint!.id)
+      onClose()
+    } else {
+      console.error(response.message)
+    }
+  }
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
@@ -149,7 +160,7 @@ export function EndpointDetail({ endpoint, open, onClose }: EndpointDetailProps)
               <Button variant="outline" size="sm" onClick={() => setConfirmingDelete(false)}>
                 Cancel
               </Button>
-              <Button variant="destructive" size="sm" onClick={() => setConfirmingDelete(false)}>
+              <Button variant="destructive" size="sm" onClick={handleDelete}>
                 Confirm
               </Button>
             </div>

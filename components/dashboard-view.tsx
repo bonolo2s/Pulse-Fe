@@ -36,6 +36,12 @@ export function DashboardView() {
     setEndpoints((prev) => [ep, ...prev])
   }
 
+  function handleDelete(id: string) {
+  setEndpoints((prev) => prev.filter((ep) => ep.id !== id))
+}
+
+<EndpointList endpoints={endpoints} onDelete={handleDelete} />
+
   return (
     <div className="flex flex-col gap-8">
       {/* Header */}
@@ -61,7 +67,7 @@ export function DashboardView() {
       />
 
       {/* Endpoint List */}
-      <EndpointList endpoints={endpoints} />
+      <EndpointList endpoints={endpoints} onDelete={handleDelete} />
 
       {/* Add dialog */}
       <AddEndpointDialog
