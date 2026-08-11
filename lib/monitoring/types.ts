@@ -22,3 +22,11 @@ export type AddEndpointRequest = {
   intervalSeconds: number
   timeoutMs: number
 }
+
+export type UpdateEndpointRequest = {
+  name: string
+  url: string
+  method: string
+  intervalSeconds: number
+  timeoutMs: number
+}

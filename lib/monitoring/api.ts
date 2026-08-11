@@ -1,5 +1,5 @@
 import apiClient from "../shared/client"
-import { Endpoint, AddEndpointRequest } from "./types"
+import { Endpoint, AddEndpointRequest, UpdateEndpointRequest } from "./types"
 import { ApiResponse } from "../shared/types"
 
 export const getEndpoints = async (userId: string): Promise<ApiResponse<Endpoint[]>> => {
@@ -19,5 +19,10 @@ export const toggleEndpoint = async (id: string): Promise<ApiResponse<null>> => 
 
 export const deleteEndpoint = async (id: string): Promise<ApiResponse<null>> => {
   const response = await apiClient.delete<ApiResponse<null>>(`/monitoring/remove-endpoint/${id}`)
+  return response.data
+}
+
+export const updateEndpoint = async (id: string, payload: UpdateEndpointRequest): Promise<ApiResponse<Endpoint>> => {
+  const response = await apiClient.put<ApiResponse<Endpoint>>(`/monitoring/edit-endpoint/${id}`, payload)
   return response.data
 }
