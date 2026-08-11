@@ -10,6 +10,8 @@ export interface Endpoint {
   lastChecked: string
   responseTime: number
   isActive: boolean
+  method: string
+  timeoutMs: number
 }
 
 export interface Alert {
@@ -33,6 +35,8 @@ export const endpoints: Endpoint[] = [
     lastChecked: "8 minutes ago",
     responseTime: 0,
     isActive: true,
+    method: "HTTPS",
+    timeoutMs: 5000,
   },
   {
     id: "2",
@@ -44,6 +48,8 @@ export const endpoints: Endpoint[] = [
     lastChecked: "1 minute ago",
     responseTime: 1240,
     isActive: true,
+    method: "POST",
+    timeoutMs: 5000,
   },
   {
     id: "3",
@@ -55,6 +61,8 @@ export const endpoints: Endpoint[] = [
     lastChecked: "1 minute ago",
     responseTime: 142,
     isActive: true,
+    method: "GET",
+    timeoutMs: 5000,
   },
   {
     id: "4",
@@ -66,6 +74,8 @@ export const endpoints: Endpoint[] = [
     lastChecked: "3 minutes ago",
     responseTime: 320,
     isActive: true,
+    method: "GET",
+    timeoutMs: 5000,
   },
   {
     id: "5",
@@ -77,6 +87,8 @@ export const endpoints: Endpoint[] = [
     lastChecked: "12 minutes ago",
     responseTime: 890,
     isActive: false,
+    method: "GET",
+    timeoutMs: 5000,
   },
 ]
 export const alerts: Alert[] = [

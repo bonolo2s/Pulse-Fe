@@ -45,5 +45,7 @@ export function mapToUiEndpoint(api: ApiEndpoint): UiEndpoint {
     lastChecked: toRelativeTime(api.lastCheckedAt),
     responseTime: api.latencyMs ?? 0,
     isActive: api.isActive,
+    method: api.method,
+    timeoutMs: api.timeoutMs,
   }
 }

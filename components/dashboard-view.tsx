@@ -12,6 +12,7 @@ import { getEndpoints, mapToUiEndpoint } from "@/lib"
 
 export function DashboardView() {
   const [endpoints, setEndpoints] = useState<Endpoint[]>([])
+  const [editingEndpoint, setEditingEndpoint] = useState<Endpoint | null>(null)
   const [loading, setLoading] = useState(true)
   const [addOpen, setAddOpen] = useState(false)
 
@@ -38,9 +39,16 @@ export function DashboardView() {
 
   function handleDelete(id: string) {
   setEndpoints((prev) => prev.filter((ep) => ep.id !== id))
-}
+  }
 
-<EndpointList endpoints={endpoints} onDelete={handleDelete} />
+  function handleEdit(ep: Endpoint) {
+  setEditingEndpoint(ep)
+  }
+
+  function handleUpdate(ep: Endpoint) {
+    setEndpoints((prev) => prev.map((e) => (e.id === ep.id ? ep : e)))
+    setEditingEndpoint(null)
+  }
 
   return (
     <div className="flex flex-col gap-8">
@@ -67,13 +75,21 @@ export function DashboardView() {
       />
 
       {/* Endpoint List */}
-      <EndpointList endpoints={endpoints} onDelete={handleDelete} />
+      <EndpointList endpoints={endpoints} onDelete={handleDelete} onEdit={handleEdit}/>
 
       {/* Add dialog */}
       <AddEndpointDialog
         open={addOpen}
         onClose={() => setAddOpen(false)}
         onAdd={handleAdd}
+      />
+      {/* Edit dialog */}
+      <AddEndpointDialog
+        open={!!editingEndpoint}
+        onClose={() => setEditingEndpoint(null)}
+        onAdd={handleUpdate}
+        mode="edit"
+        endpoint={editingEndpoint ?? undefined}
       />
     </div>
   )

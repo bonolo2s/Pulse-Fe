@@ -20,6 +20,7 @@ interface EndpointDetailProps {
   open: boolean
   onClose: () => void
   onDelete: (id: string) => void
+  onEdit: (ep: Endpoint) => void
 }
 
 // Generate synthetic uptime history bars
@@ -33,7 +34,7 @@ function generateBars() {
   })
 }
 
-export function EndpointDetail({ endpoint, open, onClose, onDelete }: EndpointDetailProps) {
+export function EndpointDetail({ endpoint, open, onClose, onDelete, onEdit }: EndpointDetailProps) {
   const [isActive, setIsActive] = useState(endpoint?.isActive ?? true)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
 
@@ -66,9 +67,12 @@ export function EndpointDetail({ endpoint, open, onClose, onDelete }: EndpointDe
               <DialogTitle className="text-base">{endpoint.name}</DialogTitle>
             </div>
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" className="size-8">
-                <Pencil className="size-4" />
-              </Button>
+            <Button variant="ghost" size="icon" className="size-8" onClick={() => {
+              onEdit(endpoint)
+              onClose()
+            }}>
+              <Pencil className="size-4" />
+            </Button>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-muted-foreground">
                   {isActive ? "Active" : "Paused"}

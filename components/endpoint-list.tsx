@@ -7,7 +7,7 @@ import { StatusBadge } from "@/components/status-badge"
 import type { Endpoint } from "@/lib/data"
 import { EndpointDetail } from "@/components/endpoint-detail"
 
-export function EndpointList({ endpoints, onDelete }: { endpoints: Endpoint[]; onDelete: (id: string) => void }) {
+export function EndpointList({ endpoints, onDelete, onEdit }: { endpoints: Endpoint[]; onDelete: (id: string) => void; onEdit: (endpoint: Endpoint) => void }) {
   const [search, setSearch] = useState("")
   const [selectedEndpoint, setSelectedEndpoint] = useState<Endpoint | null>(null)
 
@@ -90,6 +90,7 @@ export function EndpointList({ endpoints, onDelete }: { endpoints: Endpoint[]; o
         open={!!selectedEndpoint}
         onClose={() => setSelectedEndpoint(null)}
         onDelete={onDelete}
+        onEdit={onEdit}
       />
     </>
   )

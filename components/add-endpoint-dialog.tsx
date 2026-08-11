@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   Dialog,
   DialogContent,
@@ -26,14 +26,32 @@ interface AddEndpointDialogProps {
   open: boolean
   onClose: () => void
   onAdd: (endpoint: Endpoint) => void
+  mode?: "add" | "edit"
+  endpoint?: Endpoint
 }
 
-export function AddEndpointDialog({ open, onClose, onAdd }: AddEndpointDialogProps) {
+export function AddEndpointDialog({ open, onClose, onAdd, mode = "add", endpoint }: AddEndpointDialogProps) {
   const [name, setName] = useState("")
   const [url, setUrl] = useState("")
   const [interval, setInterval] = useState("5m")
   const [method, setMethod] = useState("HTTPS")
   const [timeoutMs, setTimeoutMs] = useState("5000")
+  
+    useEffect(() => {
+      if (mode === "edit" && endpoint) {
+        setName(endpoint.name)
+        setUrl(endpoint.url)
+        setMethod(endpoint.method)
+        setTimeoutMs(String(endpoint.timeoutMs))
+        setInterval(endpoint.checkInterval)
+      } else if (mode === "add") {
+        setName("")
+        setUrl("")
+        setMethod("HTTPS")
+        setTimeoutMs("5000")
+        setInterval("5m")
+      }
+    }, [mode, endpoint?.id, open])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -66,9 +84,11 @@ export function AddEndpointDialog({ open, onClose, onAdd }: AddEndpointDialogPro
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Add Endpoint</DialogTitle>
+          <DialogTitle>{mode === "edit" ? "Edit Endpoint" : "Add Endpoint"}</DialogTitle>
           <DialogDescription>
-            Register a new endpoint to start monitoring its availability and latency.
+            {mode === "edit"
+              ? "Update this endpoint's monitoring configuration."
+              : "Register a new endpoint to start monitoring its availability and latency."}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -138,7 +158,7 @@ export function AddEndpointDialog({ open, onClose, onAdd }: AddEndpointDialogPro
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit">Add Endpoint</Button>
+            <Button type="submit">{mode === "edit" ? "Save Changes" : "Add Endpoint"}</Button>
           </DialogFooter>
         </form>
       </DialogContent>
