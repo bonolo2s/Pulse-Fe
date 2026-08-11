@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   Dialog,
   DialogContent,
@@ -35,6 +35,11 @@ function generateBars() {
 export function EndpointDetail({ endpoint, open, onClose }: EndpointDetailProps) {
   const [isActive, setIsActive] = useState(endpoint?.isActive ?? true)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
+
+  useEffect(() => {
+    setIsActive(endpoint?.isActive ?? true)
+  }, [endpoint?.id, endpoint?.isActive])
+
 
   if (!endpoint) return null
 
