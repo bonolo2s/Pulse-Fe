@@ -162,6 +162,7 @@ export function AddEndpointDialog({ open, onClose, onAdd, mode = "add", endpoint
               <SelectContent>
                 <SelectItem value="30s">Every 30 seconds</SelectItem>
                 <SelectItem value="1m">Every 1 minute</SelectItem>
+                <SelectItem value="3m">Every 3 minutes</SelectItem>
                 <SelectItem value="5m">Every 5 minutes</SelectItem>
                 <SelectItem value="10m">Every 10 minutes</SelectItem>
                 <SelectItem value="15m">Every 15 minutes</SelectItem>
