@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import type { Endpoint } from "@/lib/data"
-import { intervalToSeconds, mapToUiEndpoint, addEndpoint } from "@/lib"
+import { intervalToSeconds, mapToUiEndpoint, addEndpoint, updateEndpoint } from "@/lib"
 
 interface AddEndpointDialogProps {
   open: boolean
@@ -37,25 +37,41 @@ export function AddEndpointDialog({ open, onClose, onAdd, mode = "add", endpoint
   const [method, setMethod] = useState("HTTPS")
   const [timeoutMs, setTimeoutMs] = useState("5000")
   
-    useEffect(() => {
-      if (mode === "edit" && endpoint) {
-        setName(endpoint.name)
-        setUrl(endpoint.url)
-        setMethod(endpoint.method)
-        setTimeoutMs(String(endpoint.timeoutMs))
-        setInterval(endpoint.checkInterval)
-      } else if (mode === "add") {
-        setName("")
-        setUrl("")
-        setMethod("HTTPS")
-        setTimeoutMs("5000")
-        setInterval("5m")
-      }
-    }, [mode, endpoint?.id, open])
+  useEffect(() => {
+    if (mode === "edit" && endpoint) {
+      setName(endpoint.name)
+      setUrl(endpoint.url)
+      setMethod(endpoint.method)
+      setTimeoutMs(String(endpoint.timeoutMs))
+      setInterval(endpoint.checkInterval)
+    } else if (mode === "add") {
+      setName("")
+      setUrl("")
+      setMethod("HTTPS")
+      setTimeoutMs("5000")
+      setInterval("5m")
+    }
+  }, [mode, endpoint?.id, open])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!name.trim() || !url.trim()) return
+
+    if (mode === "edit" && endpoint) {
+      const response = await updateEndpoint(endpoint.id, {
+        name: name.trim(),
+        url: url.trim(),
+        method,
+        intervalSeconds: intervalToSeconds(interval),
+        timeoutMs: Number(timeoutMs) || 5000,
+      })
+
+      if (response.error) return
+
+      onAdd(mapToUiEndpoint(response.result))
+      onClose()
+      return
+    }
 
     const userId = localStorage.getItem("userId")
     if (!userId) return
