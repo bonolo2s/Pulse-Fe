@@ -36,7 +36,7 @@ export function AddEndpointDialog({ open, onClose, onAdd, mode = "add", endpoint
   const [interval, setInterval] = useState("5m")
   const [method, setMethod] = useState("HTTPS")
   const [timeoutMs, setTimeoutMs] = useState("5000")
-  const [error, setError] = useState<boolean>(false)
+  //const [error, setError] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   
   useEffect(() => {
@@ -89,7 +89,7 @@ export function AddEndpointDialog({ open, onClose, onAdd, mode = "add", endpoint
 
     if (response.error) {
       setErrorMessage(response.message)
-      setError(true)
+      //setError(true)
       return
     }
 
@@ -177,7 +177,7 @@ export function AddEndpointDialog({ open, onClose, onAdd, mode = "add", endpoint
               </SelectContent>
             </Select>
           </div>
-          {error && (
+          {errorMessage && (
             <p className="text-sm text-destructive">{errorMessage}</p>
           )}
           <DialogFooter>
