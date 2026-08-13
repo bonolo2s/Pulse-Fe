@@ -1,4 +1,5 @@
 import apiClient from "../shared/client"
+import { isAxiosError } from "axios"
 import { Endpoint, AddEndpointRequest, UpdateEndpointRequest } from "./types"
 import { ApiResponse } from "../shared/types"
 
@@ -8,8 +9,15 @@ export const getEndpoints = async (userId: string): Promise<ApiResponse<Endpoint
 }
 
 export const addEndpoint = async (payload: AddEndpointRequest): Promise<ApiResponse<Endpoint>> => {
-  const response = await apiClient.post<ApiResponse<Endpoint>>(`/monitoring/add-endpoint`, payload)
-  return response.data
+  try {
+    const response = await apiClient.post<ApiResponse<Endpoint>>(`/monitoring/add-endpoint`, payload)
+    return response.data
+  } catch (err) {
+    if (isAxiosError(err) && err.response?.data) {
+      return err.response.data as ApiResponse<Endpoint>
+    }
+    throw err
+  }
 }
 
 export const toggleEndpoint = async (id: string): Promise<ApiResponse<null>> => {

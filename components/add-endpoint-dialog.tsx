@@ -36,6 +36,8 @@ export function AddEndpointDialog({ open, onClose, onAdd, mode = "add", endpoint
   const [interval, setInterval] = useState("5m")
   const [method, setMethod] = useState("HTTPS")
   const [timeoutMs, setTimeoutMs] = useState("5000")
+  const [error, setError] = useState<boolean>(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   
   useEffect(() => {
     if (mode === "edit" && endpoint) {
@@ -85,7 +87,11 @@ export function AddEndpointDialog({ open, onClose, onAdd, mode = "add", endpoint
       timeoutMs: Number(timeoutMs) || 5000,
     })
 
-    if (response.error) return
+    if (response.error) {
+      setErrorMessage(response.message)
+      setError(true)
+      return
+    }
 
     onAdd(mapToUiEndpoint(response.result))
     setName("")
@@ -171,6 +177,9 @@ export function AddEndpointDialog({ open, onClose, onAdd, mode = "add", endpoint
               </SelectContent>
             </Select>
           </div>
+          {error && (
+            <p className="text-sm text-destructive">{errorMessage}</p>
+          )}
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
