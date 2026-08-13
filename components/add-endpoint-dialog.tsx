@@ -9,6 +9,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog"
+import { UpgradeModal } from "@/components/ui/UpgradeModal"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -38,6 +39,7 @@ export function AddEndpointDialog({ open, onClose, onAdd, mode = "add", endpoint
   const [timeoutMs, setTimeoutMs] = useState("5000")
   //const [error, setError] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [upgradeOpen, setUpgradeOpen] = useState(false)
   
   useEffect(() => {
     if (mode === "edit" && endpoint) {
@@ -103,6 +105,7 @@ export function AddEndpointDialog({ open, onClose, onAdd, mode = "add", endpoint
   }
 
   return (
+    <>
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -177,8 +180,24 @@ export function AddEndpointDialog({ open, onClose, onAdd, mode = "add", endpoint
               </SelectContent>
             </Select>
           </div>
-          {errorMessage && (
+          {/* {errorMessage && (
             <p className="text-sm text-destructive">{errorMessage}</p>
+          )} */}
+          {errorMessage && (
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-sm text-destructive">{errorMessage}</p>
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                onClick={() => {
+                  onClose()
+                  setUpgradeOpen(true)
+                }}
+              >
+                Upgrade to Pro
+              </Button>
+            </div>
           )}
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
@@ -189,5 +208,7 @@ export function AddEndpointDialog({ open, onClose, onAdd, mode = "add", endpoint
         </form>
       </DialogContent>
     </Dialog>
+    <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} />
+    </>
   )
 }
