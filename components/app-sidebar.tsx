@@ -2,12 +2,13 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { Activity, LayoutDashboard, Bell, Settings, CheckCircle2, LogOut } from "lucide-react"
+import { Activity, LayoutDashboard, Bell, Settings, CheckCircle2, LogOut, CreditCard } from "lucide-react"
 import { cn } from "@/lib/shared/utils"
 
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Alerts", href: "/alerts", icon: Bell },
+  { label: "Billing", href: "/billing", icon: CreditCard  },
   { label: "Settings", href: "/settings", icon: Settings },
 ]
 
