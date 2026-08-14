@@ -90,7 +90,7 @@ export function DashboardView() {
         open={addOpen}
         onClose={() => setAddOpen(false)}
         onAdd={handleAdd}
-        //onLimitReached={() => setUpgradeOpen(true)}
+        onLimitReached={() => setUpgradeOpen(true)}
       />
       {/* Edit dialog */}
       <AddEndpointDialog
@@ -99,7 +99,7 @@ export function DashboardView() {
         onAdd={handleUpdate}
         mode="edit"
         endpoint={editingEndpoint ?? undefined}
-        //onLimitReached={() => setUpgradeOpen(true)}
+        onLimitReached={() => setUpgradeOpen(true)}
       />
 
       {/* Upgrade modal — single instance, shared */}

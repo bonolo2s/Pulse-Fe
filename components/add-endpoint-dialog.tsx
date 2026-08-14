@@ -9,7 +9,6 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog"
-import { UpgradeModal } from "@/components/UpgradeModal"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -30,17 +29,16 @@ interface AddEndpointDialogProps {
   onAdd: (endpoint: Endpoint) => void
   mode?: "add" | "edit"
   endpoint?: Endpoint
+  onLimitReached: () => void
 }
 
-export function AddEndpointDialog({ open, onClose, onAdd, mode = "add", endpoint }: AddEndpointDialogProps) {
+export function AddEndpointDialog({ open, onClose, onAdd, mode = "add", endpoint, onLimitReached }: AddEndpointDialogProps) {
   const [name, setName] = useState("")
   const [url, setUrl] = useState("")
   const [interval, setInterval] = useState("5m")
   const [method, setMethod] = useState("HTTPS")
   const [timeoutMs, setTimeoutMs] = useState("5000")
-  //const [error, setError] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const [upgradeOpen, setUpgradeOpen] = useState(false)
   
   useEffect(() => {
     if (mode === "edit" && endpoint) {
@@ -106,7 +104,6 @@ export function AddEndpointDialog({ open, onClose, onAdd, mode = "add", endpoint
   }
 
   return (
-    <>
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -193,7 +190,7 @@ export function AddEndpointDialog({ open, onClose, onAdd, mode = "add", endpoint
                 variant="outline"
                 onClick={() => {
                   onClose()
-                  setUpgradeOpen(true)
+                  onLimitReached()
                 }}
               >
                 <Zap className="size-4" />
@@ -210,7 +207,5 @@ export function AddEndpointDialog({ open, onClose, onAdd, mode = "add", endpoint
         </form>
       </DialogContent>
     </Dialog>
-    <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} />
-    </>
   )
 }
