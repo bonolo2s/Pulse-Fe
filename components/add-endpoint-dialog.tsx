@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select"
 import type { Endpoint } from "@/lib/data"
 import { intervalToSeconds, mapToUiEndpoint, addEndpoint, updateEndpoint } from "@/lib"
+import { Zap } from "lucide-react"
 
 interface AddEndpointDialogProps {
   open: boolean
@@ -189,12 +190,13 @@ export function AddEndpointDialog({ open, onClose, onAdd, mode = "add", endpoint
               <Button
                 type="button"
                 size="sm"
-                variant="secondary"
+                variant="outline"
                 onClick={() => {
                   onClose()
                   setUpgradeOpen(true)
                 }}
               >
+                <Zap className="size-4" />
                 Upgrade to Pro
               </Button>
             </div>

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Plus } from "lucide-react"
+import { Plus, Zap } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { StatCards } from "@/components/stat-cards"
 import { EndpointList } from "@/components/endpoint-list"
@@ -9,12 +9,14 @@ import { AddEndpointDialog } from "@/components/add-endpoint-dialog"
 import { getStatusCounts } from "@/lib/data"
 import type { Endpoint } from "@/lib/data"
 import { getEndpoints, mapToUiEndpoint } from "@/lib"
+import { UpgradeModal } from "./UpgradeModal"
 
 export function DashboardView() {
   const [endpoints, setEndpoints] = useState<Endpoint[]>([])
   const [editingEndpoint, setEditingEndpoint] = useState<Endpoint | null>(null)
   const [loading, setLoading] = useState(true)
   const [addOpen, setAddOpen] = useState(false)
+  const [upgradeOpen, setUpgradeOpen] = useState(false)
 
   useEffect(() => {
     async function fetchEndpoints() {
@@ -60,10 +62,16 @@ export function DashboardView() {
             Monitor your infrastructure health and latencies in real-time.
           </p>
         </div>
-        <Button onClick={() => setAddOpen(true)} className="gap-2">
-          <Plus className="size-4" />
-          Add Endpoint
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => setUpgradeOpen(true)} className="gap-2">
+            <Zap className="size-4" />
+            Upgrade to Pro
+          </Button>
+          <Button onClick={() => setAddOpen(true)} className="gap-2">
+            <Plus className="size-4" />
+            Add Endpoint
+          </Button>
+        </div>
       </div>
 
       {/* Stats */}
@@ -82,6 +90,7 @@ export function DashboardView() {
         open={addOpen}
         onClose={() => setAddOpen(false)}
         onAdd={handleAdd}
+        //onLimitReached={() => setUpgradeOpen(true)}
       />
       {/* Edit dialog */}
       <AddEndpointDialog
@@ -90,7 +99,11 @@ export function DashboardView() {
         onAdd={handleUpdate}
         mode="edit"
         endpoint={editingEndpoint ?? undefined}
+        //onLimitReached={() => setUpgradeOpen(true)}
       />
+
+      {/* Upgrade modal — single instance, shared */}
+      <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} />
     </div>
   )
 }
