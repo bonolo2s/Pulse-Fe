@@ -5,3 +5,6 @@ export * from "./shared/types";
 export * from "./monitoring/types"
 export * from "./monitoring/api"
 export * from "./monitoring/mapper"
+
+export * from "./billing/types"
+export * from "./billing/api"
