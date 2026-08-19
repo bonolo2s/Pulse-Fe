@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { CreditCard, Receipt, Download, Plus, Check, Trash2 } from "lucide-react"
+import { UpgradeModal } from "@/components/UpgradeModal"
 
 // ---- mock data, swap with real API later ----
 const currentPlan = {
@@ -29,6 +30,7 @@ const invoices = [
 
 export default function BillingPage() {
   const [tab, setTab] = useState("subscription")
+  const [upgradeOpen, setUpgradeOpen] = useState(false)
 
   return (
     <div className="flex flex-col gap-8">
@@ -82,7 +84,7 @@ export default function BillingPage() {
               </div>
 
               <div className="flex justify-end">
-                <Button className="gap-2">
+                <Button className="gap-2" onClick={() => setUpgradeOpen(true)}>
                   <Check className="size-4" />
                   Upgrade to Pro
                 </Button>
@@ -177,6 +179,7 @@ export default function BillingPage() {
           </Card>
         </TabsContent>
       </Tabs>
+      <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} />
     </div>
   )
 }
