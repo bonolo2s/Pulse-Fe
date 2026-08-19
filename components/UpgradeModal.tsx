@@ -1,8 +1,10 @@
 "use client"
 
+import { useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Sparkles } from "lucide-react"
+import { initiateCheckout } from "@/lib"
 
 interface UpgradeModalProps {
   open: boolean
@@ -10,6 +12,24 @@ interface UpgradeModalProps {
 }
 
 export function UpgradeModal({ open, onClose }: UpgradeModalProps) {
+  const [loading, setLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  async function handleUpgrade() {
+    setLoading(true)
+    setErrorMessage(null)
+
+    const response = await initiateCheckout()
+
+    if (response.error) {
+      setErrorMessage(response.message)
+      setLoading(false)
+      return
+    }
+
+    window.location.href = response.result.authorizationUrl
+  }
+
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-md">
@@ -18,16 +38,21 @@ export function UpgradeModal({ open, onClose }: UpgradeModalProps) {
             <div className="flex size-9 items-center justify-center rounded-full bg-primary/10">
               <Sparkles className="size-4 text-primary" />
             </div>
-            <DialogTitle>Pro is coming soon</DialogTitle>
+            <DialogTitle>Upgrade to Pro</DialogTitle>
           </div>
           <DialogDescription>
-            You've hit the Free plan limit. Upgrading isn't available yet — we're putting the finishing touches on Pro. Check back soon.
+            You've hit the Free plan limit. Upgrade to Pro for unlimited endpoints, faster check intervals, and full history.
           </DialogDescription>
         </DialogHeader>
 
+        {errorMessage && <p className="text-sm text-destructive">{errorMessage}</p>}
+
         <DialogFooter>
-          <Button type="button" onClick={onClose}>
-            Got it
+          <Button type="button" variant="outline" onClick={onClose} disabled={loading}>
+            Cancel
+          </Button>
+          <Button type="button" onClick={handleUpgrade} disabled={loading}>
+            {loading ? "Redirecting..." : "Upgrade to Pro"}
           </Button>
         </DialogFooter>
       </DialogContent>
