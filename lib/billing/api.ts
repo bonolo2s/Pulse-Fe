@@ -16,8 +16,15 @@ export const initiateCheckout = async (): Promise<ApiResponse<InitializeTransact
 }
 
 export const getSubscription = async (userId: string): Promise<ApiResponse<Subscription>> => {
-  const response = await apiClient.get<ApiResponse<Subscription>>(`/billing/get-subscription/${userId}`)
-  return response.data
+  try {
+    const response = await apiClient.get<ApiResponse<Subscription>>(`/billing/get-subscription/${userId}`)
+    return response.data
+  } catch (err) {
+    if (isAxiosError(err) && err.response?.data) {
+      return err.response.data as ApiResponse<Subscription>
+    }
+    throw err
+  }
 }
 
 export const getBillingHistory = async (userId: string): Promise<ApiResponse<Invoice[]>> => {
