@@ -7,7 +7,7 @@ import { Activity } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { login } from "@/lib"
+import { getSubscription, login } from "@/lib"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -30,6 +30,12 @@ export default function LoginPage() {
       localStorage.setItem("token", response.result.token)
       localStorage.setItem("refreshToken", response.result.refreshToken)
       localStorage.setItem("userId", response.result.user.id)
+
+    const subResponse = await getSubscription(response.result.user.id)
+      if (!subResponse.error) {
+        localStorage.setItem("plan", subResponse.result.plan)
+      }
+      
       router.push("/dashboard")
     } catch (err) {
       setError("Something went wrong. Please try again.")//
