@@ -28,6 +28,13 @@ export const getSubscription = async (userId: string): Promise<ApiResponse<Subsc
 }
 
 export const getBillingHistory = async (userId: string): Promise<ApiResponse<Invoice[]>> => {
-  const response = await apiClient.get<ApiResponse<Invoice[]>>(`/billing/get-invoices/${userId}`)
-  return response.data
+  try {
+    const response = await apiClient.get<ApiResponse<Invoice[]>>(`/billing/get-invoices/${userId}`)
+    return response.data
+  } catch (err) {
+    if (isAxiosError(err) && err.response?.data) {
+      return err.response.data as ApiResponse<Invoice[]>
+    }
+    throw err
+  }
 }
