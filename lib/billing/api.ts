@@ -38,3 +38,15 @@ export const getBillingHistory = async (userId: string): Promise<ApiResponse<Inv
     throw err
   }
 }
+
+export const cancelSubscription = async (userId: string): Promise<ApiResponse<void>> => {
+  try {
+    const response = await apiClient.put<ApiResponse<void>>(`/billing/cancel-subscription/${userId}`)
+    return response.data
+  } catch (err) {
+    if (isAxiosError(err) && err.response?.data) {
+      return err.response.data as ApiResponse<void>
+    }
+    throw err
+  }
+}
