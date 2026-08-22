@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { CreditCard, Receipt, Download, Plus, Check, Trash2 } from "lucide-react"
 import { UpgradeModal } from "@/components/UpgradeModal"
+import { Subscription, getSubscription, getEndpointCount } from "@/lib"
 
 // ---- mock data, swap with real API later ----
 const currentPlan = {
@@ -31,6 +32,31 @@ const invoices = [
 export default function BillingPage() {
   const [tab, setTab] = useState("subscription")
   const [upgradeOpen, setUpgradeOpen] = useState(false)
+
+  const [subscription, setSubscription] = useState<Subscription | null>(null)
+  const [endpointCount, setEndpointCount] = useState<number>(0)
+  const [loadingSubscription, setLoadingSubscription] = useState(true)
+  const [manageOpen, setManageOpen] = useState(false)
+
+  useEffect(() => {
+  async function fetchSubscriptionData() {
+    const userId = localStorage.getItem("userId")
+    if (!userId) return
+
+    setLoadingSubscription(true)
+    const [subRes, countRes] = await Promise.all([
+      getSubscription(userId),
+      getEndpointCount(userId),
+    ])
+
+    if (!subRes.error) setSubscription(subRes.result)
+    if (!countRes.error) setEndpointCount(countRes.result)
+    setLoadingSubscription(false)
+  }
+
+  fetchSubscriptionData()
+}, [])
+
 
   return (
     <div className="flex flex-col gap-8">
@@ -57,38 +83,59 @@ export default function BillingPage() {
                   <CardTitle>Current Plan</CardTitle>
                   <CardDescription>Your active subscription and usage.</CardDescription>
                 </div>
-                <Badge variant="secondary">{currentPlan.name}</Badge>
+                {subscription && <Badge variant="secondary">{subscription.plan}</Badge>}
               </div>
             </CardHeader>
             <CardContent className="flex flex-col gap-6">
-              <div className="flex items-baseline gap-1">
-                <span className="text-3xl font-bold text-foreground">{currentPlan.price}</span>
-                <span className="text-sm text-muted-foreground">/month</span>
-              </div>
+              {loadingSubscription ? (
+                <p className="text-sm text-muted-foreground">Loading subscription...</p>
+              ) : !subscription ? (
+                <p className="text-sm text-muted-foreground">Could not load subscription.</p>
+              ) : (
+                <>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-3xl font-bold text-foreground">
+                      ${subscription.monthlyPrice}
+                    </span>
+                    <span className="text-sm text-muted-foreground">/month</span>
+                  </div>
 
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Endpoints used</span>
-                  <span className="font-medium text-foreground">
-                    {currentPlan.endpointsUsed} / {currentPlan.endpointsLimit}
-                  </span>
-                </div>
-                <div className="h-2 w-full rounded-full bg-muted">
-                  <div
-                    className="h-2 rounded-full bg-foreground"
-                    style={{
-                      width: `${(currentPlan.endpointsUsed / currentPlan.endpointsLimit) * 100}%`,
-                    }}
-                  />
-                </div>
-              </div>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Endpoints used</span>
+                      <span className="font-medium text-foreground">
+                        {subscription.plan === "Pro"
+                          ? `${endpointCount} / Unlimited`
+                          : `${endpointCount} / ${subscription.endpointLimit}`}
+                      </span>
+                    </div>
+                    <div className="h-2 w-full rounded-full bg-muted">
+                      <div
+                        className="h-2 rounded-full bg-foreground"
+                        style={{
+                          width:
+                            subscription.plan === "Pro"
+                              ? "100%"
+                              : `${(endpointCount / subscription.endpointLimit) * 100}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
 
-              <div className="flex justify-end">
-                <Button className="gap-2" onClick={() => setUpgradeOpen(true)}>
-                  <Check className="size-4" />
-                  Upgrade to Pro
-                </Button>
-              </div>
+                  <div className="flex justify-end">
+                    {subscription.plan === "Pro" ? (
+                      <Button variant="outline" className="gap-2" onClick={() => setManageOpen(true)}>
+                        Manage Subscription
+                      </Button>
+                    ) : (
+                      <Button className="gap-2" onClick={() => setUpgradeOpen(true)}>
+                        <Check className="size-4" />
+                        Upgrade to Pro
+                      </Button>
+                    )}
+                  </div>
+                </>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

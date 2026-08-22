@@ -6,6 +6,7 @@ export interface Subscription {
   userId: string;
   plan: SubscriptionPlan;
   endpointLimit: number;
+  monthlyPrice: number;
   startedAt: string;
   expiresAt: string | null;
   isActive: boolean;
