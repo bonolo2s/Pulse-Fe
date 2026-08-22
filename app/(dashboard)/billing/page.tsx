@@ -7,7 +7,12 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { CreditCard, Receipt, Download, Plus, Check, Trash2 } from "lucide-react"
 import { UpgradeModal } from "@/components/UpgradeModal"
-import { Subscription, getSubscription, getEndpointCount } from "@/lib"
+import { Subscription,
+   getSubscription, 
+   getEndpointCount,
+   PaymentMethod,
+    getPaymentMethods,
+     deletePaymentMethod } from "@/lib"
 
 // ---- mock data, swap with real API later ----
 const currentPlan = {
@@ -38,24 +43,48 @@ export default function BillingPage() {
   const [loadingSubscription, setLoadingSubscription] = useState(true)
   const [manageOpen, setManageOpen] = useState(false)
 
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([])
+  const [loadingPaymentMethods, setLoadingPaymentMethods] = useState(true)
+
   useEffect(() => {
-  async function fetchSubscriptionData() {
-    const userId = localStorage.getItem("userId")
-    if (!userId) return
+    async function fetchSubscriptionData() {
+      const userId = localStorage.getItem("userId")
+      if (!userId) return
 
-    setLoadingSubscription(true)
-    const [subRes, countRes] = await Promise.all([
-      getSubscription(userId),
-      getEndpointCount(userId),
-    ])
+      setLoadingSubscription(true)
+      const [subRes, countRes] = await Promise.all([
+        getSubscription(userId),
+        getEndpointCount(userId),
+      ])
 
-    if (!subRes.error) setSubscription(subRes.result)
-    if (!countRes.error) setEndpointCount(countRes.result)
-    setLoadingSubscription(false)
+      if (!subRes.error) setSubscription(subRes.result)
+      if (!countRes.error) setEndpointCount(countRes.result)
+      setLoadingSubscription(false)
+    }
+
+    fetchSubscriptionData()
+  }, [])
+
+  useEffect(() => {
+    async function fetchPaymentMethods() {
+      const userId = localStorage.getItem("userId")
+      if (!userId) return
+
+      setLoadingPaymentMethods(true)
+      const res = await getPaymentMethods(userId)
+      if (!res.error) setPaymentMethods(res.result)
+      setLoadingPaymentMethods(false)
+    }
+
+    fetchPaymentMethods()
+  }, [])
+
+  async function handleDeletePaymentMethod(id: string) {
+    const res = await deletePaymentMethod(id)
+    if (!res.error) {
+      setPaymentMethods((prev) => prev.filter((pm) => pm.id !== id))
+    }
   }
-
-  fetchSubscriptionData()
-}, [])
 
 
   return (
@@ -149,14 +178,16 @@ export default function BillingPage() {
                   <CardTitle>Payment Methods</CardTitle>
                   <CardDescription>Cards saved to your account.</CardDescription>
                 </div>
-                <Button variant="outline" size="sm" className="gap-2">
+                <Button variant="outline" size="sm" className="gap-2" onClick={() => setUpgradeOpen(true)}>
                   <Plus className="size-4" />
                   Add Card
                 </Button>
               </div>
             </CardHeader>
             <CardContent>
-              {paymentMethods.length === 0 ? (
+              {loadingPaymentMethods ? (
+                <p className="text-sm text-muted-foreground">Loading payment methods...</p>
+              ) : paymentMethods.length === 0 ? (
                 <div className="flex flex-col items-center justify-center gap-2 py-12 text-center">
                   <CreditCard className="size-8 text-muted-foreground/50" />
                   <p className="text-sm text-muted-foreground">No payment methods saved yet.</p>
@@ -169,9 +200,15 @@ export default function BillingPage() {
                         <CreditCard className="size-5 text-muted-foreground" />
                         <div className="flex flex-col">
                           <span className="text-sm font-medium text-foreground">
-                            {pm.brand} •••• {pm.last4}
+                            {pm.type === "Card"
+                              ? `${pm.brand} •••• ${pm.last4}`
+                              : pm.bankName}
                           </span>
-                          <span className="text-xs text-muted-foreground">Expires {pm.expiry}</span>
+                          {pm.type === "Card" && (
+                            <span className="text-xs text-muted-foreground">
+                              Expires {pm.expiryMonth}/{pm.expiryYear}
+                            </span>
+                          )}
                         </div>
                         {pm.isDefault && (
                           <Badge variant="secondary" className="text-[11px]">
@@ -179,7 +216,12 @@ export default function BillingPage() {
                           </Badge>
                         )}
                       </div>
-                      <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-muted-foreground hover:text-destructive"
+                        onClick={() => handleDeletePaymentMethod(pm.id)}
+                      >
                         <Trash2 className="size-4" />
                       </Button>
                     </li>
