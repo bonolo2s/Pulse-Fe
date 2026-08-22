@@ -9,9 +9,10 @@ import { initiateCheckout } from "@/lib"
 interface UpgradeModalProps {
   open: boolean
   onClose: () => void
+    reason?: "limit" | "manual"
 }
 
-export function UpgradeModal({ open, onClose }: UpgradeModalProps) {
+export function UpgradeModal({ open, onClose, reason = "manual" }: UpgradeModalProps) {
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
@@ -41,7 +42,9 @@ export function UpgradeModal({ open, onClose }: UpgradeModalProps) {
             <DialogTitle>Upgrade to Pro</DialogTitle>
           </div>
           <DialogDescription>
-            You've hit the Free plan limit. Upgrade to Pro for unlimited endpoints, faster check intervals, and full history.
+            {reason === "limit"
+              ? "You've hit the Free plan limit. Upgrade to Pro for unlimited endpoints, faster check intervals, and full history."
+              : "Upgrade to Pro for unlimited endpoints, faster check intervals, and full history."}
           </DialogDescription>
         </DialogHeader>
 
