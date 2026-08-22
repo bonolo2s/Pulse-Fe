@@ -14,8 +14,10 @@ import { Subscription,
   getPaymentMethods,
   deletePaymentMethod, 
   Invoice,
-  getBillingHistory
+  getBillingHistory,
+  cancelSubscription
 } from "@/lib"
+import { ManageSubscriptionModal } from "@/components/ManageSubscriptionModal"
 
 // ---- mock data, swap with real API later ----
 const currentPlan = {
@@ -97,7 +99,7 @@ export default function BillingPage() {
     }
 
   fetchInvoices()
-}, [])
+  }, [])
 
   async function handleDeletePaymentMethod(id: string) {
     const res = await deletePaymentMethod(id)
@@ -105,6 +107,18 @@ export default function BillingPage() {
       setPaymentMethods((prev) => prev.filter((pm) => pm.id !== id))
     }
   }
+
+  async function handleCancelSubscription() {
+  const userId = localStorage.getItem("userId")
+  if (!userId) return
+
+  const res = await cancelSubscription(userId)
+  if (!res.error) {
+    setManageOpen(false)
+    const subRes = await getSubscription(userId)
+    if (!subRes.error) setSubscription(subRes.result)
+  }
+}
 
 
   return (
@@ -299,6 +313,12 @@ export default function BillingPage() {
         </TabsContent>
       </Tabs>
       <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} />
+      <ManageSubscriptionModal
+      open={manageOpen}
+      onClose={() => setManageOpen(false)}
+      subscription={subscription}
+      onCancel={handleCancelSubscription}
+    />
     </div>
   )
 }
