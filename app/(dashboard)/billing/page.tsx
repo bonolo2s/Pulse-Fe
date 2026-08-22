@@ -8,11 +8,14 @@ import { Badge } from "@/components/ui/badge"
 import { CreditCard, Receipt, Download, Plus, Check, Trash2 } from "lucide-react"
 import { UpgradeModal } from "@/components/UpgradeModal"
 import { Subscription,
-   getSubscription, 
-   getEndpointCount,
-   PaymentMethod,
-    getPaymentMethods,
-     deletePaymentMethod } from "@/lib"
+  getSubscription, 
+  getEndpointCount,
+  PaymentMethod,
+  getPaymentMethods,
+  deletePaymentMethod, 
+  Invoice,
+  getBillingHistory
+} from "@/lib"
 
 // ---- mock data, swap with real API later ----
 const currentPlan = {
@@ -46,6 +49,9 @@ export default function BillingPage() {
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([])
   const [loadingPaymentMethods, setLoadingPaymentMethods] = useState(true)
 
+  const [invoices, setInvoices] = useState<Invoice[]>([])
+  const [loadingInvoices, setLoadingInvoices] = useState(true)
+
   useEffect(() => {
     async function fetchSubscriptionData() {
       const userId = localStorage.getItem("userId")
@@ -78,6 +84,20 @@ export default function BillingPage() {
 
     fetchPaymentMethods()
   }, [])
+
+  useEffect(() => {
+    async function fetchInvoices() {
+      const userId = localStorage.getItem("userId")
+      if (!userId) return
+
+      setLoadingInvoices(true)
+      const res = await getBillingHistory(userId)
+      if (!res.error) setInvoices(res.result)
+      setLoadingInvoices(false)
+    }
+
+  fetchInvoices()
+}, [])
 
   async function handleDeletePaymentMethod(id: string) {
     const res = await deletePaymentMethod(id)
@@ -240,7 +260,9 @@ export default function BillingPage() {
               <CardDescription>Past invoices and receipts.</CardDescription>
             </CardHeader>
             <CardContent>
-              {invoices.length === 0 ? (
+              {loadingInvoices ? (
+                <p className="text-sm text-muted-foreground">Loading billing history...</p>
+              ) : invoices.length === 0 ? (
                 <div className="flex flex-col items-center justify-center gap-2 py-12 text-center">
                   <Receipt className="size-8 text-muted-foreground/50" />
                   <p className="text-sm text-muted-foreground">No invoices yet.</p>
@@ -251,10 +273,18 @@ export default function BillingPage() {
                     <li key={inv.id} className="flex items-center justify-between py-3">
                       <div className="flex flex-col">
                         <span className="text-sm font-medium text-foreground">{inv.id}</span>
-                        <span className="text-xs text-muted-foreground">{inv.date}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(inv.issuedAt).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
+                        </span>
                       </div>
                       <div className="flex items-center gap-4">
-                        <span className="text-sm text-foreground">{inv.amount}</span>
+                        <span className="text-sm text-foreground">
+                          {inv.currency} {inv.amount.toFixed(2)}
+                        </span>
                         <Badge variant="secondary">{inv.status}</Badge>
                         <Button variant="ghost" size="icon">
                           <Download className="size-4" />
