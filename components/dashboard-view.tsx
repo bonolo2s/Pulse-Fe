@@ -19,6 +19,7 @@ export function DashboardView() {
   const [loading, setLoading] = useState(true)
   const [addOpen, setAddOpen] = useState(false)
   const [upgradeOpen, setUpgradeOpen] = useState(false)
+  const [upgradeReason, setUpgradeReason] = useState<"limit" | "manual">("manual")
   const { subscription, cancel } = useSubscription()
   const [manageOpen, setManageOpen] = useState(false)
 
@@ -72,7 +73,7 @@ export function DashboardView() {
               Manage Subscription
             </Button>
           ) : (
-            <Button variant="outline" onClick={() => setUpgradeOpen(true)} className="gap-2">
+            <Button variant="outline" onClick={() => { setUpgradeReason("manual"); setUpgradeOpen(true) }} className="gap-2">
               <Zap className="size-4" />
               Upgrade to Pro
             </Button>
@@ -113,7 +114,7 @@ export function DashboardView() {
       />
 
       {/* Upgrade modal — single instance, shared */}
-      <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} />
+      <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} reason={upgradeReason} />
       <ManageSubscriptionModal
       open={manageOpen}
       onClose={() => setManageOpen(false)}

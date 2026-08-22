@@ -42,6 +42,7 @@ const invoices = [
 export default function BillingPage() {
   const [tab, setTab] = useState("subscription")
   const [upgradeOpen, setUpgradeOpen] = useState(false)
+  const [upgradeReason, setUpgradeReason] = useState<"limit" | "manual">("manual")
 
   const [subscription, setSubscription] = useState<Subscription | null>(null)
   const [endpointCount, setEndpointCount] = useState<number>(0)
@@ -191,7 +192,7 @@ export default function BillingPage() {
                         Manage Subscription
                       </Button>
                     ) : (
-                      <Button className="gap-2" onClick={() => setUpgradeOpen(true)}>
+                      <Button className="gap-2" onClick={() => { setUpgradeReason("manual"); setUpgradeOpen(true) }}>
                         <Check className="size-4" />
                         Upgrade to Pro
                       </Button>
@@ -312,7 +313,7 @@ export default function BillingPage() {
           </Card>
         </TabsContent>
       </Tabs>
-      <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} />
+      <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} reason={upgradeReason} />
       <ManageSubscriptionModal
       open={manageOpen}
       onClose={() => setManageOpen(false)}
