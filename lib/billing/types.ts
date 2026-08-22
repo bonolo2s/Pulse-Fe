@@ -1,9 +1,4 @@
-export interface InitializeTransactionResult {
-  authorizationUrl: string;
-  accessCode: string;
-  reference: string;
-}
-
+// ---- Subscription ----
 export type SubscriptionPlan = "Free" | "Pro";
 
 export interface Subscription {
@@ -16,6 +11,28 @@ export interface Subscription {
   isActive: boolean;
 }
 
+export interface InitializeTransactionResult {
+  authorizationUrl: string;
+  accessCode: string;
+  reference: string;
+}
+
+// ---- Payment Method ----
+export type PaymentMethodType = "Card" | "Eft";
+export type CardBrand = "Visa" | "Mastercard" | "Verve";
+
+export interface PaymentMethod {
+  id: string;
+  type: PaymentMethodType;
+  brand: CardBrand | null;
+  last4: string | null;
+  expiryMonth: number | null;
+  expiryYear: number | null;
+  bankName: string | null;
+  isDefault: boolean;
+}
+
+// ---- Invoice ----
 export type InvoiceStatus = "Pending" | "Paid" | "Failed";
 
 export interface Invoice {
