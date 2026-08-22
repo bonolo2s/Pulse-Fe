@@ -34,3 +34,18 @@ export const updateEndpoint = async (id: string, payload: UpdateEndpointRequest)
   const response = await apiClient.put<ApiResponse<Endpoint>>(`/monitoring/edit-endpoint/${id}`, payload)
   return response.data
 }
+
+export const getEndpointCount = async (userId: string): Promise<ApiResponse<number>> => {
+  try {
+    const response = await apiClient.get<ApiResponse<number>>(`/monitoring/get-endpoint-count/${userId}`)
+    return response.data
+  } catch (err) {
+    if (isAxiosError(err)) {
+      if (err.response?.data) {
+        return err.response.data as ApiResponse<number>
+      }
+      throw err
+    }
+    throw err
+  }
+}
