@@ -10,6 +10,8 @@ import { getStatusCounts } from "@/lib/data"
 import type { Endpoint } from "@/lib/data"
 import { getEndpoints, mapToUiEndpoint } from "@/lib"
 import { UpgradeModal } from "./UpgradeModal"
+import { useSubscription } from "@/hooks/useSubscription"
+import { ManageSubscriptionModal } from "./ManageSubscriptionModal"
 
 export function DashboardView() {
   const [endpoints, setEndpoints] = useState<Endpoint[]>([])
@@ -17,6 +19,8 @@ export function DashboardView() {
   const [loading, setLoading] = useState(true)
   const [addOpen, setAddOpen] = useState(false)
   const [upgradeOpen, setUpgradeOpen] = useState(false)
+  const { subscription, cancel } = useSubscription()
+  const [manageOpen, setManageOpen] = useState(false)
 
   useEffect(() => {
     async function fetchEndpoints() {
@@ -63,10 +67,16 @@ export function DashboardView() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => setUpgradeOpen(true)} className="gap-2">
-            <Zap className="size-4" />
-            Upgrade to Pro
-          </Button>
+          {subscription?.plan === "Pro" ? (
+            <Button variant="outline" onClick={() => setManageOpen(true)} className="gap-2">
+              Manage Subscription
+            </Button>
+          ) : (
+            <Button variant="outline" onClick={() => setUpgradeOpen(true)} className="gap-2">
+              <Zap className="size-4" />
+              Upgrade to Pro
+            </Button>
+          )}
           <Button onClick={() => setAddOpen(true)} className="gap-2">
             <Plus className="size-4" />
             Add Endpoint
@@ -104,6 +114,12 @@ export function DashboardView() {
 
       {/* Upgrade modal — single instance, shared */}
       <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} />
+      <ManageSubscriptionModal
+      open={manageOpen}
+      onClose={() => setManageOpen(false)}
+      subscription={subscription}
+      onCancel={cancel}
+    />
     </div>
   )
 }
