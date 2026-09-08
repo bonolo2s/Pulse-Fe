@@ -283,7 +283,7 @@ export default function BillingPage() {
                   <p className="text-sm text-muted-foreground">No invoices yet.</p>
                 </div>
               ) : (
-                <ul className="flex flex-col divide-y divide-border">
+                <ul className="flex flex-col divide-y divide-border max-h-60 overflow-y-auto">
                   {invoices.map((inv) => (
                     <li key={inv.id} className="flex items-center justify-between py-3">
                       <div className="flex flex-col">
