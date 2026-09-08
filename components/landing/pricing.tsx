@@ -6,7 +6,7 @@ import { cn } from "@/lib/shared/utils"
 const plans = [
   {
     name: "Free",
-    price: "$0",
+    price: "R0",
     period: "forever",
     description: "For side projects and personal sites.",
     features: [
@@ -20,7 +20,7 @@ const plans = [
   },
   {
     name: "Pro",
-    price: "$19",
+    price: "R450.00",
     period: "/month",
     description: "For growing teams that need faster checks.",
     features: [
