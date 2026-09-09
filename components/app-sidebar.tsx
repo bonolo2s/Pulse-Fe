@@ -2,7 +2,8 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { Activity, LayoutDashboard, Bell, Settings, CheckCircle2, LogOut, CreditCard, User } from "lucide-react"
+import { Activity, LayoutDashboard, Bell, Settings, CheckCircle2, LogOut, CreditCard, User, Moon, Sun } from "lucide-react"
+import { useTheme } from "next-themes"
 import { cn } from "@/lib/shared/utils"
 
 const navItems = [
@@ -16,12 +17,17 @@ const navItems = [
 export function AppSidebar() {
   const pathname = usePathname()
   const router = useRouter()
+  const { theme, setTheme } = useTheme()
 
 function handleLogout() {
   localStorage.removeItem("token")
   localStorage.removeItem("refreshToken")
   localStorage.removeItem("userId")
   router.push("/login")
+}
+
+function toggleTheme() {
+  setTheme(theme === "dark" ? "light" : "dark")
 }
 
   return (
@@ -64,6 +70,13 @@ function handleLogout() {
 
       {/* Footer */}
       <div className="border-t border-sidebar-border px-4 py-4 flex flex-col gap-3">
+        <button
+          onClick={toggleTheme}
+          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground transition-colors w-full"
+        >
+          {theme === "dark" ? <Sun className="size-[18px]" /> : <Moon className="size-[18px]" />}
+          {theme === "dark" ? "Light Mode" : "Dark Mode"}
+        </button>
         <button
           onClick={handleLogout}
           className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground transition-colors w-full"
