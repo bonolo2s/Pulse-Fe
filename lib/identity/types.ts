@@ -29,3 +29,10 @@ export type AuthToken = {
     tier: string;
   };
 };
+
+export type JwtPayload = {
+  sub: string
+  email: string
+  displayName: string
+  exp: number
+}

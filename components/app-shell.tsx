@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { AppSidebar } from "@/components/app-sidebar"
+import { Navbar } from "./navbar"
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter()
@@ -28,9 +29,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       <AppSidebar />
-      <main className="flex-1 overflow-y-auto">
-        <div className="mx-auto max-w-5xl px-8 py-8">{children}</div>
-      </main>
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <Navbar />
+        <main className="flex-1 overflow-y-auto">
+          <div className="mx-auto max-w-5xl px-8 py-8">{children}</div>
+        </main>
+      </div>
     </div>
   )
 }
