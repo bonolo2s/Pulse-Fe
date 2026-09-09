@@ -2,31 +2,8 @@
 
 import Link from "next/link"
 import { useEffect, useState } from "react"
-
-interface JwtPayload {
-  sub: string
-  email: string
-  displayName: string
-  exp: number
-}
-
-function decodeToken(token: string): JwtPayload | null {
-  try {
-    const payload = token.split(".")[1]
-    return JSON.parse(atob(payload))
-  } catch {
-    return null
-  }
-}
-
-function getInitials(name: string) {
-  return name
-    .split(" ")
-    .map((part) => part[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2)
-}
+import { decodeToken, getInitials } from "@/lib/identity/utils"
+import { JwtPayload } from "@/lib/identity/types"
 
 export function Navbar() {
   const [user, setUser] = useState<JwtPayload | null>(null)
