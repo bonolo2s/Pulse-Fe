@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { getSubscription, identityApi  } from "@/lib"
 
+const isLive = process.env.NEXT_PUBLIC_USE_LIVE_API === "true"
+
 export default function LoginPage() {
   const router = useRouter()
   const [email, setEmail] = useState("")
@@ -64,6 +66,13 @@ export default function LoginPage() {
             <p className="text-sm text-muted-foreground">
               Sign in to your Pulse account
             </p>
+            {!isLive && (
+              <div className="mb-6 rounded-lg border border-border bg-muted/50 p-3 text-sm">
+                <p className="font-medium text-foreground">Demo credentials</p>
+                <p className="text-muted-foreground">Email: demo@pulse.io</p>
+                <p className="text-muted-foreground">Password: demopass123</p>
+              </div>
+            )}
           </div>
 
           <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-5">
