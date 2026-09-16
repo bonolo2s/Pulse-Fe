@@ -13,6 +13,37 @@ import { UpgradeModal } from "./UpgradeModal"
 import { useSubscription } from "@/hooks/useSubscription"
 import { ManageSubscriptionModal } from "./ManageSubscriptionModal"
 
+const useLive = process.env.NEXT_PUBLIC_USE_LIVE_API === "true"
+
+const DEMO_STORAGE_KEY = "demo-endpoints"
+
+const seedEndpoint: Endpoint = {
+  id: "demo-1",
+  name: "Production API",
+  url: "https://api.acme.com/v1/health",
+  status: "operational",
+  uptime: 99.99,
+  checkInterval: "1m",
+  lastChecked: "1 minute ago",
+  responseTime: 142,
+  isActive: true,
+  method: "GET",
+  timeoutMs: 5000,
+}
+
+function loadDemoEndpoints(): Endpoint[] {
+  const raw = localStorage.getItem(DEMO_STORAGE_KEY)
+  if (!raw) {
+    localStorage.setItem(DEMO_STORAGE_KEY, JSON.stringify([seedEndpoint]))
+    return [seedEndpoint]
+  }
+  return JSON.parse(raw)
+}
+
+function saveDemoEndpoints(eps: Endpoint[]) {
+  localStorage.setItem(DEMO_STORAGE_KEY, JSON.stringify(eps))
+}
+
 export function DashboardView() {
   const [endpoints, setEndpoints] = useState<Endpoint[]>([])
   const [editingEndpoint, setEditingEndpoint] = useState<Endpoint | null>(null)
@@ -25,6 +56,12 @@ export function DashboardView() {
 
   useEffect(() => {
     async function fetchEndpoints() {
+      if (!useLive) {
+        setEndpoints(loadDemoEndpoints())
+        setLoading(false)
+        return
+      }
+
       const userId = localStorage.getItem("userId")
       if (!userId) return
 
@@ -41,11 +78,19 @@ export function DashboardView() {
   const counts = getStatusCounts(endpoints)
 
   function handleAdd(ep: Endpoint) {
-    setEndpoints((prev) => [ep, ...prev])
+    setEndpoints((prev) => {
+      const next = [ep, ...prev]
+      if (!useLive) saveDemoEndpoints(next)
+      return next
+    })
   }
 
   function handleDelete(id: string) {
-  setEndpoints((prev) => prev.filter((ep) => ep.id !== id))
+  setEndpoints((prev) => {
+    const next = prev.filter((ep) => ep.id !== id)
+    if (!useLive) saveDemoEndpoints(next)
+    return next
+  })
   }
 
   function handleEdit(ep: Endpoint) {
@@ -53,7 +98,11 @@ export function DashboardView() {
   }
 
   function handleUpdate(ep: Endpoint) {
-    setEndpoints((prev) => prev.map((e) => (e.id === ep.id ? ep : e)))
+    setEndpoints((prev) => {
+      const next = prev.map((e) => (e.id === ep.id ? ep : e))
+      if (!useLive) saveDemoEndpoints(next)
+      return next
+    })
     setEditingEndpoint(null)
   }
 
@@ -102,6 +151,7 @@ export function DashboardView() {
         onClose={() => setAddOpen(false)}
         onAdd={handleAdd}
         onLimitReached={() => setUpgradeOpen(true)}
+        endpointCount={endpoints.length}
       />
       {/* Edit dialog */}
       <AddEndpointDialog
@@ -111,6 +161,7 @@ export function DashboardView() {
         mode="edit"
         endpoint={editingEndpoint ?? undefined}
         onLimitReached={() => setUpgradeOpen(true)}
+        endpointCount={endpoints.length}
       />
 
       {/* Upgrade modal — single instance, shared */}

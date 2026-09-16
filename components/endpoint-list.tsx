@@ -54,7 +54,9 @@ export function EndpointList({ endpoints, onDelete, onEdit }: { endpoints: Endpo
                         {endpoint.name}
                       </span>
                       <span className="truncate text-xs text-muted-foreground font-mono">
-                        {endpoint.url}
+                        <span className="inline-block w-[240px] truncate align-middle">
+                          {endpoint.url}
+                        </span>
                         <span className="ml-2 font-sans">
                           {"  "}
                           {"  \u00B7  "}

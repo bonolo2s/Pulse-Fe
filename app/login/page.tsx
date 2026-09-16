@@ -7,7 +7,7 @@ import { Activity } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { getSubscription, login } from "@/lib"
+import { getSubscription, identityApi  } from "@/lib"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -22,7 +22,7 @@ export default function LoginPage() {
     setError(null)
 
     try {
-      const response = await login({ email, password })
+      const response = await identityApi.login({ email, password })
       if (response.error) {
         setError(response.message)
         return

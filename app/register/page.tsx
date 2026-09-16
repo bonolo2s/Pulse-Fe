@@ -7,7 +7,7 @@ import { Activity, CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { register } from "@/lib"
+import { identityApi  } from "@/lib"
 
 const perks = [
   "5 endpoints monitored free",
@@ -30,7 +30,7 @@ export default function RegisterPage() {
     setError(null)
 
     try {
-      const response = await register({ fullName: name, email, password })
+      const response = await identityApi.register({ fullName: name, email, password })
       if (response.error) {
         setError(response.message)
         return

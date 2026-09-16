@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from "@/components/ui/button"
 import { Sparkles } from "lucide-react"
 import { initiateCheckout } from "@/lib"
+import { DemoNoticeModal } from "./DemoNoticeModal"
 
 interface UpgradeModalProps {
   open: boolean
@@ -12,11 +13,22 @@ interface UpgradeModalProps {
     reason?: "limit" | "manual"
 }
 
+const useLive = process.env.NEXT_PUBLIC_USE_LIVE_API === "true"
+
+
 export function UpgradeModal({ open, onClose, reason = "manual" }: UpgradeModalProps) {
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [noticeOpen, setNoticeOpen] = useState(false)
 
   async function handleUpgrade() {
+
+    if (!useLive) {
+       onClose()
+       setNoticeOpen(true)
+       return
+    }
+
     setLoading(true)
     setErrorMessage(null)
 
@@ -32,6 +44,7 @@ export function UpgradeModal({ open, onClose, reason = "manual" }: UpgradeModalP
   }
 
   return (
+    <>
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -60,5 +73,7 @@ export function UpgradeModal({ open, onClose, reason = "manual" }: UpgradeModalP
         </DialogFooter>
       </DialogContent>
     </Dialog>
+    <DemoNoticeModal open={noticeOpen} onClose={() => setNoticeOpen(false)} />
+    </>
   )
 }

@@ -1,23 +1,28 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { Activity, LayoutDashboard, Bell, Settings, CheckCircle2, LogOut, CreditCard, User, Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 import { cn } from "@/lib/shared/utils"
+import { DemoNoticeModal } from "./DemoNoticeModal"
+
+const useLive = process.env.NEXT_PUBLIC_USE_LIVE_API === "true"
 
 const navItems = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Alerts", href: "/alerts", icon: Bell },
-  { label: "Billing", href: "/billing", icon: CreditCard  },
-  { label: "Profile", href: "/profile", icon: User },
-  { label: "Settings", href: "/settings", icon: Settings },
+  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard, locked: false },
+  { label: "Alerts", href: "/alerts", icon: Bell, locked: true },
+  { label: "Billing", href: "/billing", icon: CreditCard, locked: true },
+  { label: "Profile", href: "/profile", icon: User, locked: true },
+  { label: "Settings", href: "/settings", icon: Settings, locked: true },
 ]
 
 export function AppSidebar() {
   const pathname = usePathname()
   const router = useRouter()
   const { theme, setTheme } = useTheme()
+  const [noticeOpen, setNoticeOpen] = useState(false)
 
 function handleLogout() {
   localStorage.removeItem("token")
@@ -48,10 +53,17 @@ function toggleTheme() {
         <ul className="flex flex-col gap-1">
           {navItems.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
+            const isLocked = item.locked && !useLive
             return (
               <li key={item.href}>
                 <Link
                   href={item.href}
+                  onClick={(e) => {
+                    if (isLocked) {
+                      e.preventDefault()
+                      setNoticeOpen(true)
+                    }
+                  }}
                   className={cn(
                     "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                     isActive
@@ -89,6 +101,8 @@ function toggleTheme() {
           <span>All Systems Operational</span>
         </div>
       </div>
+
+      <DemoNoticeModal open={noticeOpen} onClose={() => setNoticeOpen(false)} />
     </aside>
   )
 }

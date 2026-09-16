@@ -23,6 +23,9 @@ import type { Endpoint } from "@/lib/data"
 import { intervalToSeconds, mapToUiEndpoint, addEndpoint, updateEndpoint } from "@/lib"
 import { Zap } from "lucide-react"
 
+const useLive = process.env.NEXT_PUBLIC_USE_LIVE_API === "true"
+const DEMO_ENDPOINT_LIMIT = 3
+
 interface AddEndpointDialogProps {
   open: boolean
   onClose: () => void
@@ -30,9 +33,10 @@ interface AddEndpointDialogProps {
   mode?: "add" | "edit"
   endpoint?: Endpoint
   onLimitReached: () => void
+  endpointCount: number
 }
 
-export function AddEndpointDialog({ open, onClose, onAdd, mode = "add", endpoint, onLimitReached }: AddEndpointDialogProps) {
+export function AddEndpointDialog({ open, onClose, onAdd, mode = "add", endpoint, onLimitReached, endpointCount }: AddEndpointDialogProps) {
   const [name, setName] = useState("")
   const [url, setUrl] = useState("")
   const [interval, setInterval] = useState("5m")
@@ -61,6 +65,19 @@ export function AddEndpointDialog({ open, onClose, onAdd, mode = "add", endpoint
     if (!name.trim() || !url.trim()) return
 
     if (mode === "edit" && endpoint) {
+      if (!useLive) {
+        onAdd({
+          ...endpoint,
+          name: name.trim(),
+          url: url.trim(),
+          method,
+          checkInterval: interval,
+          timeoutMs: Number(timeoutMs) || 5000,
+        })
+        onClose()
+        return
+      }
+
       const response = await updateEndpoint(endpoint.id, {
         name: name.trim(),
         url: url.trim(),
@@ -72,6 +89,34 @@ export function AddEndpointDialog({ open, onClose, onAdd, mode = "add", endpoint
       if (response.error) return
 
       onAdd(mapToUiEndpoint(response.result))
+      onClose()
+      return
+    }
+
+    if (!useLive) {
+      if (endpointCount >= DEMO_ENDPOINT_LIMIT) {
+        setErrorMessage("You've reached the demo limit of 3 endpoints.")
+        return
+      }
+
+      onAdd({
+        id: crypto.randomUUID(),
+        name: name.trim(),
+        url: url.trim(),
+        status: "operational",
+        uptime: 100,
+        checkInterval: interval,
+        lastChecked: "Just now",
+        responseTime: 0,
+        isActive: true,
+        method,
+        timeoutMs: Number(timeoutMs) || 5000,
+      })
+      setName("")
+      setUrl("")
+      setInterval("5m")
+      setMethod("HTTPS")
+      setTimeoutMs("5000")
       onClose()
       return
     }

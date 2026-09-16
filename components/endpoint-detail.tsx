@@ -34,6 +34,8 @@ function generateBars() {
   })
 }
 
+const useLive = process.env.NEXT_PUBLIC_USE_LIVE_API === "true"
+
 export function EndpointDetail({ endpoint, open, onClose, onDelete, onEdit }: EndpointDetailProps) {
   const [isActive, setIsActive] = useState(endpoint?.isActive ?? true)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
@@ -48,6 +50,12 @@ export function EndpointDetail({ endpoint, open, onClose, onDelete, onEdit }: En
   const bars = generateBars()
 
   async function handleDelete() {
+    if (!useLive) {
+      onDelete(endpoint!.id)
+      onClose()
+      return
+    }
+
     const response = await deleteEndpoint(endpoint!.id)
     if (!response.error) {
       onDelete(endpoint!.id)
